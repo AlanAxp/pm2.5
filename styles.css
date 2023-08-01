@@ -1,0 +1,13 @@
+:root {
+    padding: 0;
+    margin: 0;
+}
+
+h1 {
+    color: red;
+}
+
+#map {
+    height: 480px;
+    width: 480px;
+}
