@@ -10,9 +10,13 @@ colors = red_gradient(base_triad, end_triad, max_value);
 
 
 // Generando el año
-var yearSelector = document.getElementById('year-selector')
+var yearSelector = document.getElementById('year-selector');
 // Generando fechas disponibles para la selección
 var dateSelector = document.getElementById('day-selector');
+// Selector del boton para generar animacion.
+var button = document.getElementById("btn");
+// Boton para finalizar animación
+var button_stop_animation = document.getElementById("btn-stop");
 
 /** Generando el mapa. */
 var map;
@@ -49,6 +53,13 @@ yearSelector.addEventListener("change", () => {
 
     updateDates(data, selectedYear);
 })
+
+// Escuchando los cambios del selector de generar la animación.
+button.addEventListener("click", generateAnimation)
+// Escuchando los cambios del selector de generar la animación.
+button.addEventListener("click", generateAnimation)
+// Escuchando los cambios del selector de generar la animación.
+button_stop_animation.addEventListener("click", stopAnimation)
 
 /** JSON que contiene la información del CSV de las particulas PM2.5 */
 let merged_json;
@@ -107,6 +118,46 @@ async function main() {
 /** Ejecución de la función principal.  */
 main();
 
+function stopAnimation() {
+    window.location.reload();
+}
+
+/** Función para generar la animación del las mediciones */
+async function generateAnimation() {
+
+    // Valores iniciales.
+    selectedDate = data[0][0];
+
+    // Se busca generar un iterador por todas las actualizaciones.
+
+    // Limpiamos todo lo que se habia generado en el mapa.
+    cleanMap();
+
+    for await (let item of data) {
+
+        selectedDate = item[0];
+
+        data.forEach((data_item) => {
+            if (data_item[0] == selectedDate) {
+                circleLayer.addLayer(
+                    L.circle([data_item[7], data_item[6]], {
+                        color: colors[data_item[4]],
+                        fillOpacity: 0.5,
+                        radius: 1500
+                    })
+                ).addTo(map);
+            }
+        })
+        
+        
+        // Hacemos que el siguiente paso no sea inmediato.
+        await async_sleep(1_00)
+        
+        // Reiniciamos el mapa.
+        cleanMap()
+    }
+}
+
 /** Función para limpiar el mapa */
 function cleanMap() {
     circleLayer.removeFrom(map);
@@ -138,9 +189,6 @@ function updateCircles(data_list, selected_date, colors, map) {
 
     data_list.forEach((data_item) => {
         if (data_item[0] == selected_date) {
-
-                console.log(data_item);
-
                 circleLayer.addLayer(
                     L.circle([data_item[7], data_item[6]], {
                         color: colors[data_item[4]],
@@ -157,4 +205,11 @@ function updateCircles(data_list, selected_date, colors, map) {
             }
         })
     // )
+}
+
+
+async function async_sleep(ms) {
+    return new Promise((resolve, _) => {
+        setTimeout(resolve, ms);
+    })
 }
