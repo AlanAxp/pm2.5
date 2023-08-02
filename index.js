@@ -4,9 +4,11 @@ var min_value = 2;
 var max_value = 109;
 
 // Generación de los colores
-var base_triad = [100, 0, 0];
-var end_triad = [180, 130, 130];
+var base_triad = [32, 142, 0];
+var end_triad = [106, 0, 30];
 colors = red_gradient(base_triad, end_triad, max_value);
+console.log(colors.length)
+
 
 
 // Generando el año
@@ -141,9 +143,9 @@ async function generateAnimation() {
             if (data_item[0] == selectedDate) {
                 circleLayer.addLayer(
                     L.circle([data_item[7], data_item[6]], {
-                        color: colors[data_item[4]],
+                        color: colors[data_item[3]],
                         fillOpacity: 0.5,
-                        radius: 1500
+                        radius: 2_500
                     })
                 ).addTo(map);
             }
@@ -151,7 +153,7 @@ async function generateAnimation() {
         
         
         // Hacemos que el siguiente paso no sea inmediato.
-        await async_sleep(1_00)
+        await async_sleep(5_0)
         
         // Reiniciamos el mapa.
         cleanMap()
@@ -191,14 +193,14 @@ function updateCircles(data_list, selected_date, colors, map) {
         if (data_item[0] == selected_date) {
                 circleLayer.addLayer(
                     L.circle([data_item[7], data_item[6]], {
-                        color: colors[data_item[4]],
+                        color: colors[data_item[3]],
                         fillOpacity: 0.5,
-                        radius: 1500
+                        radius: 2_500
                     })
                 ).addTo(map);
 
                 // L.circle([data_item[7], data_item[6]], {
-                //     color: colors[data_item[4]],
+                //     color: colors[data_item[3]],
                 //     fillOpacity: 0.5,
                 //     radius: 1500
                 // }).addTo(map);
