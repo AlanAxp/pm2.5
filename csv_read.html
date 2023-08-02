@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="./styles.css"/>
+    <link rel="stylesheet" href="./reset.css"/>
 
     <link
         rel="stylesheet"
@@ -22,16 +23,68 @@
 
 </head>
 <body>
-    <h1>Mapa de particulas suspendidas (por fecha)</h1>
     
     
-    <div id="map"></div>
+    <div class="main-container">
+        <h1>Mapa de partículas suspendidas</h1>
+        <section class="map">
+            <div class="left">
+                <div id="map"></div>
+            </div>
+            <div class="right">
+                <div class="snapshot">
+                    <p>Snapshot</p>
     
-    <select id="year-selector"></select>
-    <select id="day-selector"></select>
+                    <div class="start-range">
+                        <select id="year-selector"></select>
+                        <select id="day-selector"></select>
+                    </div>
+                </div>        
+                <div class="animation-controls">
+                    <p>Parámetros de animación</p>
+                    <div class="date-range">
+                        <div class="start-range">
+                            <label for="start-date">Fecha inicial</label>
     
-    <button id="btn">Generar animación</button>
-    <button id="btn-stop">Detener animación</button>
+                            <div class="selectors-container">
+                                <select id="start-year-selector"></select>
+                                <select id="start-date-selector"></select>
+                            </div>
+                        </div>
+                        <div class="final-range">
+                            <label for="final-date">Fecha final</label>
+                            <div class="selectors-container">
+                                <select id="final-year-selector"></select>
+                                <select id="final-date-selector"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bts-container">
+                        <button id="btn">Generar animación</button>
+                        <button id="btn-stop">Detener animación</button>
+                    </div>
+
+                    <div id="view" class="view"></div>
+                </div>
+            </div>
+        </section>
+        <section class="info">
+            <h2>Criterio de monitoreo de contaminantes para PM2.5</h2>
+
+            <p>Método: determinación de la masa de partículas presente en un flujo de aire, las partículas son separadas de la corriente y depositadas sobre un filtro colocado en un elemento oscilante, la variación en la frecuencia de oscilación es proporcional a la masa. El tamaño de partícula está determinado por la entrada selectiva y el flujo de muestra.</p>
+
+            <p>Método: Atenuación en la intensidad de la radiación beta por las partículas depositadas sobre un filtro continuo.</p>
+
+
+            <div class="sources">
+                <h4>Fuentes</h4>
+                <p><a href="http://www.aire.cdmx.gob.mx/default.php?opc=%27ZaBhnmI=%27&dc=Yg==">http://www.aire.cdmx.gob.mx/default.php?opc=%27ZaBhnmI=%27&dc=Yg==</a></p>
+    
+                <p><a href="http://www.aire.cdmx.gob.mx/default.php?opc=%27aKBhnmE=%27&r=b3BlbmRhdGEvcmVkX21hbnVhbC9yZWRfbWFudWFsX3BhcnRpY3VsYXNfc3VzcC5jc3Y=">http://www.aire.cdmx.gob.mx/default.php?opc=%27aKBhnmE=%27&r=b3BlbmRhdGEvcmVkX21hbnVhbC9yZWRfbWFudWFsX3BhcnRpY3VsYXNfc3VzcC5jc3Y=</a></p>
+            </div>
+        </section>
+    </div>
+
     <script src="./index.js" type="module"></script>
 </body>
 </html>

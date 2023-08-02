@@ -7,14 +7,48 @@ var max_value = 109;
 var base_triad = [32, 142, 0];
 var end_triad = [106, 0, 30];
 colors = red_gradient(base_triad, end_triad, max_value);
-console.log(colors.length)
 
 
+// Si se selecciona un rango de fechas, entonces se usará este rango para genrar la animación.
+// Primero asignamos un elemento de html a estos selectores.
+
+var startYearElement = document.getElementById('start-year-selector');
+var startYear;
+startYearElement.addEventListener("change", () => {
+    startYear = startYearElement.value;
+
+    updateDatesStart(data, startYear)
+})
+
+var startDateElement = document.getElementById('start-date-selector');
+var startDate;
+startDateElement.addEventListener("change", () => {
+    startDate = startDateElement.value
+})
+
+var finalYearElement = document.getElementById('final-year-selector');
+var finalYear;
+finalYearElement.addEventListener("change", () => {
+    finalYear = finalYearElement.value
+
+    updateDatesFinal(data, finalYear)
+})
+
+var finalDateElement = document.getElementById('final-date-selector');
+var finalDate;
+finalDateElement.addEventListener("change", () => {
+    finalDate = finalDateElement.value
+    console.log(finalDate);
+})
+
+
+// Para ver las fechas de la animación.
+var viewElement = document.getElementById('view');
 
 // Generando el año
-var yearSelector = document.getElementById('year-selector');
+var yearElement = document.getElementById('year-selector');
 // Generando fechas disponibles para la selección
-var dateSelector = document.getElementById('day-selector');
+var dayElement = document.getElementById('day-selector');
 // Selector del boton para generar animacion.
 var button = document.getElementById("btn");
 // Boton para finalizar animación
@@ -32,7 +66,9 @@ var data;
 var colors;
 
 for (let year = 2003; year < 2024; year++) {
-    yearSelector.add(new Option(`${year}`));
+    yearElement.add(new Option(`${year}`));
+    startYearElement.add(new Option(`${year}`));
+    finalYearElement.add(new Option(`${year}`));
 }
 
 /** Año seleccionado por el usuario. */
@@ -41,18 +77,17 @@ var selectedYear = "2003";
 var selectedDate = "17/08/2003";
 
 // Escuchando los cambios en el selector de año
-dateSelector.addEventListener('change', () => {
+dayElement.addEventListener('change', () => {
 
-    selectedDate = dateSelector.value;
+    selectedDate = dayElement.value;
 
     /** Función para actualizar la información de los marcadores de intensidad */
     updateCircles(data, selectedDate ,colors, map)
 })
 
 // Escuchando el cambio de la selección del año.
-yearSelector.addEventListener("change", () => {
-    selectedYear = yearSelector.value;
-
+yearElement.addEventListener("change", () => {
+    selectedYear = yearElement.value
     updateDates(data, selectedYear);
 })
 
@@ -111,6 +146,15 @@ async function main() {
 
     // Actualizando las fechas seleccionables.
     updateDates(data, selectedYear);
+
+    startYear = data[0][0].split("/")[2];
+    startYearElement.value = startYear;
+
+    finalYear = data[data.length - 1][0].split("/")[2];
+    finalYearElement.value = finalYear;
+
+    updateDatesStart(data, startYear);
+    updateDatesFinal(data, finalYear);
     
     // Actualizando las áreas circulares mostradas.
     updateCircles(data, selectedDate ,colors, map);
@@ -127,37 +171,93 @@ function stopAnimation() {
 /** Función para generar la animación del las mediciones */
 async function generateAnimation() {
 
-    // Valores iniciales.
-    selectedDate = data[0][0];
-
     // Se busca generar un iterador por todas las actualizaciones.
 
     // Limpiamos todo lo que se habia generado en el mapa.
     cleanMap();
 
-    for await (let item of data) {
+    var currentDate;
 
-        selectedDate = item[0];
+    if (startDate && finalDate) {
 
-        data.forEach((data_item) => {
-            if (data_item[0] == selectedDate) {
-                circleLayer.addLayer(
-                    L.circle([data_item[7], data_item[6]], {
-                        color: colors[data_item[3]],
-                        fillOpacity: 0.5,
-                        radius: 2_500
-                    })
-                ).addTo(map);
-            }
-        })
+        if ((new Date(startDate)) > (new Date(finalDate))) {
+            alert("Rango invalido!");
+            window.location.reload();
+        }
         
-        
-        // Hacemos que el siguiente paso no sea inmediato.
-        await async_sleep(5_0)
-        
-        // Reiniciamos el mapa.
-        cleanMap()
+        var init = data.findIndex((v) => v[0] == startDate);
+        var last = data.findIndex((v) => v[0] == finalDate);
+
+        var subarray = data.slice(init, last + 1);
+
+        for await (let item of subarray) {
+    
+            selectedDate = item[0];
+            currentDate = selectedDate
+    
+            data.forEach((data_item) => {
+                if (data_item[0] == selectedDate) {
+                    circleLayer.addLayer(
+                        L.circle([data_item[7], data_item[6]], {
+                            color: colors[data_item[3]],
+                            fillOpacity: 0.5,
+                            radius: 2_500
+                        })
+                    ).addTo(map);
+
+
+                    viewElement.innerHTML = '';
+                    var p = document.createElement('p');
+                    p.innerText = `Visualizando: ${currentDate}`;
+                    viewElement.appendChild(p)
+
+                }
+            })
+            
+            // Hacemos que el siguiente paso no sea inmediato.
+            await async_sleep(1_00)
+            
+            // Reiniciamos el mapa.
+            cleanMap()
+        }
+    } else {
+
+        console.log("por aculla")
+
+        for await (let item of data) {
+    
+            selectedDate = item[0];
+            currentDate = selectedDate;
+    
+            data.forEach((data_item) => {
+                if (data_item[0] == selectedDate) {
+                    circleLayer.addLayer(
+                        L.circle([data_item[7], data_item[6]], {
+                            color: colors[data_item[3]],
+                            fillOpacity: 0.5,
+                            radius: 2_500
+                        })
+                    ).addTo(map);
+
+
+                    viewElement.innerHTML = '';
+                    var p = document.createElement('p');
+                    p.innerText = `Visualizando: ${currentDate}`;
+                    viewElement.appendChild(p)
+
+
+                }
+            })
+            
+            
+            // Hacemos que el siguiente paso no sea inmediato.
+            await async_sleep(1_00)
+            
+            // Reiniciamos el mapa.
+            cleanMap()
+        }
     }
+
 }
 
 /** Función para limpiar el mapa */
@@ -170,7 +270,7 @@ function cleanMap() {
 /** Función para actualizar las fechas que se muestran en el selector. */
 function updateDates(data_list, selected_year) {
     
-    dateSelector.innerHTML = '';
+    dayElement.innerHTML = '';
     cleanMap()
 
     data_list.forEach(item => {
@@ -179,7 +279,41 @@ function updateDates(data_list, selected_year) {
             var option = document.createElement('option');
             option.value = dateItem;
             option.label = dateItem;
-            dateSelector.appendChild(option)
+            dayElement.appendChild(option)
+        }
+    });
+}
+
+/** Función para actualizar las fechas de inicio que se muestran en el selector. */
+function updateDatesStart(data_list, selected_year) {
+    
+    startDateElement.innerHTML = '';
+    cleanMap()
+
+    data_list.forEach(item => {
+        var dateItem = item[0];
+        if (dateItem.includes(selected_year)) {
+            var option = document.createElement('option');
+            option.value = dateItem;
+            option.label = dateItem;
+            startDateElement.appendChild(option)
+        }
+    });
+}
+
+/** Función para actualizar las fechas de finalización que se muestran en el selector. */
+function updateDatesFinal(data_list, selected_year) {
+    
+    finalDateElement.innerHTML = '';
+    cleanMap()
+
+    data_list.forEach(item => {
+        var dateItem = item[0];
+        if (dateItem.includes(selected_year)) {
+            var option = document.createElement('option');
+            option.value = dateItem;
+            option.label = dateItem;
+            finalDateElement.appendChild(option)
         }
     });
 }
@@ -198,18 +332,12 @@ function updateCircles(data_list, selected_date, colors, map) {
                         radius: 2_500
                     })
                 ).addTo(map);
-
-                // L.circle([data_item[7], data_item[6]], {
-                //     color: colors[data_item[3]],
-                //     fillOpacity: 0.5,
-                //     radius: 1500
-                // }).addTo(map);
             }
-        })
-    // )
+        }
+    )
 }
 
-
+/** Función para hacer que el flujo de la iteración no sea tan rápido.  */
 async function async_sleep(ms) {
     return new Promise((resolve, _) => {
         setTimeout(resolve, ms);
