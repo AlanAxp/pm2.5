@@ -30,3 +30,9 @@ El cual se inicializa con el comando
 ```bash
     source termodinamica/bin/activate
 ```
+
+# Levantando el servidor
+
+Para desplegar el mapa, se necesita instalar el plugin de `Live server` en Visual Studio Code y una vez sobre el archivo `csv_read.html` ejecutar el comando `Live Server: Open with Live Server`.
+
+Posteriormente en el navegador ir hacia la ruta `http://localhost:5500/csv_read.html`
