@@ -6,7 +6,7 @@ var max_value = 109;
 // Generación de los colores
 var base_triad = [32, 142, 0];
 var end_triad = [106, 0, 30];
-colors = red_gradient(base_triad, end_triad, max_value);
+colors = color_gradient(base_triad, end_triad, max_value);
 
 
 // Si se selecciona un rango de fechas, entonces se usará este rango para genrar la animación.
@@ -112,7 +112,7 @@ async function getJSON() {
 }
 
 /**  Esta función genera un gradiente sobre la recta que une dos puntos en un espacio RGB */
-function red_gradient(from, to, n) {
+function color_gradient(from, to, n) {
     let values = new Array();
     let divisor = n > 1 ? n - 1 : 1;
     for(let i = 0; i < n; i++) {
@@ -181,7 +181,7 @@ async function generateAnimation() {
     if (startDate && finalDate) {
 
         if ((new Date(startDate)) > (new Date(finalDate))) {
-            alert("Rango invalido!");
+            alert("¡Rango no valido!");
             window.location.reload();
         }
         
@@ -221,8 +221,6 @@ async function generateAnimation() {
             cleanMap()
         }
     } else {
-
-        console.log("por aculla")
 
         for await (let item of data) {
     
